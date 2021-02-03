@@ -24,7 +24,8 @@ using namespace std;
 
 namespace example
 {
-    int  x,y, xTouch, yTouch;
+    int  Speed;
+    basics::Vector2f velocityVector;
 
     Menu_Scene::Menu_Scene()
     {
@@ -57,26 +58,11 @@ namespace example
             switch (event.id)
             {
                 case ID(touch-started): {break;}
-                case ID(touch-moved):
-                {
-                    int speedX, speedY;
-
-                    xTouch = *event[ID(x)].as< var::Float > ();
-                    yTouch = *event[ID(y)].as< var::Float > ();
-
-                    Vector2f test = Vector2f({(float )(xTouch - x),(float)(yTouch - y)});
-                    test = test.normalize();
-
-                    testSprite->set_speed({test[0] * 1000, test[1] * 1000});
-                    testSprite
-                    break;
-
-                }
+                case ID(touch-moved): {break;}
                 case ID(touch-ended):
                 {
                     //x = *event[ID(x)].as< var::Float > ();
                     //y = *event[ID(y)].as< var::Float > ();
-                    testSprite->set_speed({0, 0});
                     break;
                 }
             }
@@ -109,11 +95,8 @@ namespace example
                 canvas->set_color    (255, 255, 255);
 
                 testSprite->render(*canvas);
-
-                if (texture)
-                {
-                    //canvas->fill_rectangle({640,640}, {100,100}, texture.get());
-                }
+                bottomBorder->render(*canvas);
+                topBorder->render(*canvas);
             }
         }
     }
@@ -126,26 +109,44 @@ namespace example
 
             if (context)
             {
-                texture = Texture_2D::create (ID(test), context, "test.png");
+                ballTexture = Texture_2D::create (ID(test), context, "ball.png");
+                horizontalLimitTexture = Texture_2D::create(ID(topBorderTest),context, "horizontal-bar.png");
 
-                if (texture)
+                if (ballTexture)
                 {
-                    context->add (texture);
-
+                    context->add (ballTexture);
+                    context->add(horizontalLimitTexture);
                     state = RUNNING;
                 }
 
-                testSprite = shared_ptr<Sprite>(new Sprite(texture.get()));
+                testSprite = shared_ptr<Sprite>(new Sprite(ballTexture.get()));
+                bottomBorder = shared_ptr<Sprite>(new Sprite(horizontalLimitTexture.get()));
+                topBorder = shared_ptr<Sprite>(new Sprite(horizontalLimitTexture.get()));
+
+                bottomBorder->set_position({640,15});
+                topBorder->set_position({640,705});
+
                 testSprite->set_position({200,200});
-                testSprite->set_scale(0.5f);
+                testSprite->set_scale(1.f);
+                testSprite->set_speed({50, 400});
             }
         }
     }
 
     void Menu_Scene::run (float time)
     {
-        x = testSprite->get_position_x();
-        y = testSprite->get_position_y();
         testSprite->update(time);
+
+        if (testSprite->intersects(*topBorder))
+        {
+            testSprite->set_position_y(topBorder->get_bottom_y() - testSprite->get_height()/2.f);
+            testSprite->set_speed_y(-testSprite->get_speed_y());
+        }
+        else if (testSprite->intersects(*bottomBorder))
+        {
+            testSprite->set_position_y(bottomBorder->get_top_y() + testSprite->get_height()/2.f);
+            testSprite->set_speed_y(-testSprite->get_speed_y());
+        }
+
     }
 }

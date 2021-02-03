@@ -138,8 +138,8 @@ namespace basics
                 //xml_attribute<> * w_attribute = img_tag->first_attribute ("w");
                 //xml_attribute<> * h_attribute = img_tag->first_attribute ("h");
 
-                //assert(!w_attribute || texture->get_width  () == std::atoi (w_attribute->value ()));
-                //assert(!h_attribute || texture->get_height () == std::atoi (h_attribute->value ()));
+                //assert(!w_attribute || ballTexture->get_width  () == std::atoi (w_attribute->value ()));
+                //assert(!h_attribute || ballTexture->get_height () == std::atoi (h_attribute->value ()));
 
                 // Se busca el tag "definitions" (anidado en el tag "img"):
 

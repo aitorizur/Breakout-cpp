@@ -33,9 +33,9 @@ namespace example
         unsigned       canvas_width;
         unsigned       canvas_height;
 
-        Texture_Handle texture;
+        Texture_Handle ballTexture, horizontalLimitTexture;
 
-        std::shared_ptr<basics::Sprite> testSprite;
+        std::shared_ptr<basics::Sprite> testSprite, topBorder, bottomBorder;
 
 
 
