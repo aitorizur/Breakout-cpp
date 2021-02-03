@@ -98,9 +98,6 @@ namespace example
             {
                 canvas->clear        ();
                 canvas->set_color    (1, 1, 1);
-                canvas->draw_point   ({ 360, 360 });
-                canvas->draw_segment ({   0,   0 }, { 1280, 720 });
-                canvas->draw_segment ({   0, 720 }, { 1280,   0 });
 
                 if (texture)
                 {

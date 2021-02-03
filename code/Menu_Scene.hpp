@@ -11,6 +11,7 @@
 #include <memory>
 #include <basics/Scene>
 #include <basics/Texture_2D>
+#include "Sprite.hpp"
 
 namespace example
 {
@@ -33,6 +34,9 @@ namespace example
         unsigned       canvas_height;
 
         Texture_Handle texture;
+
+        std::shared_ptr<basics::Sprite> testSprite;
+
 
 
     public:
