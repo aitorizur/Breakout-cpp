@@ -800,7 +800,7 @@ Load a file from disk into buffer. The function allocates the out buffer, and
 after usage you should free it.
 out: output parameter, contains pointer to loaded buffer.
 outsize: output parameter, size of the allocated out buffer
-filename: the path to the file to load
+filename: the path to the file to LoadTextures
 return value: error code (0 means ok)
 */
 unsigned lodepng_load_file(unsigned char** out, size_t* outsize, const char* filename);
@@ -1528,7 +1528,7 @@ int main(int argc, char *argv[])
 {
   const char* filename = argc > 1 ? argv[1] : "test.png";
 
-  //load and decode
+  //LoadTextures and decode
   std::vector<unsigned char> image;
   unsigned width, height;
   unsigned error = lodepng::decode(image, width, height, filename);

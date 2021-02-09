@@ -8,7 +8,10 @@
 #include <memory>
 #include <basics/Scene>
 #include <basics/Texture_2D>
+#include <basics/Timer>
 #include "Sprite.hpp"
+
+using namespace std;
 
 namespace basics
 {
@@ -31,11 +34,22 @@ namespace basics
         unsigned       canvas_width;
         unsigned       canvas_height;
 
+        Timer timer;
+
         /////////////////////////////////////////////////////////
 
-        ///////////////// Basic scene control setup ///////////////////
+        ///////////////// Variables relacionadas con la carga de texturas y sprites ///////////////////
 
-        std::list<std::shared_ptr<Sprite>> sceneSpritesList;
+        //Creamos un struct que contendra la ruta de las texturas junto con un ID
+        static struct   Texture_Data { Id id; const char * path; } textures_data[];
+
+        //Numero de texturas que hay en el array la informacion de las texturas
+        static unsigned textures_count;
+
+        //Mapa en el que se guardan shared_ptr a las texturas cargadas
+        map<Id, shared_ptr<Texture_2D>> textures;
+        //Lista en la que se guardan shared_ptr a los sprites creados
+        list<shared_ptr<Sprite>> sprites;
 
         /////////////////////////////////////////////////////////
 
@@ -58,9 +72,12 @@ namespace basics
 
     private:
 
-        void load ();
+        void LoadTextures ();
+        void CreateSprites ();
         void run  (float time);
-        float CalculateDistance(basics::Point2f firstPoint, basics::Point2f secondPoint);
+        void RenderLoading(Canvas & canvas);
+        void RenderPlay(Canvas & canvas);
+
     };
 
 }
