@@ -1,25 +1,23 @@
 /*
- * SAMPLE SCENE
- * Copyright © 2018+ Ángel Rodríguez Ballesteros
+ * GAME SCENE
+ * Copyright © 2021+ Aitor Izurrategui de Castro
  *
- * Distributed under the Boost Software License, version  1.0
- * See documents/LICENSE.TXT or www.boost.org/LICENSE_1_0.txt
- *
- * angel.rodriguez@esne.edu
+ * aitorizur@hotmail.com
  */
 
 #include <memory>
 #include <basics/Scene>
 #include <basics/Texture_2D>
+#include "Sprite.hpp"
 
-namespace example
+namespace basics
 {
     class Sample_Scene : public basics::Scene
     {
 
-        typedef std::shared_ptr< basics::Texture_2D > Texture_Handle;
+    private:
 
-    public:
+        ///////////////// Basic scene control setup ///////////////////
 
         enum State
         {
@@ -33,9 +31,13 @@ namespace example
         unsigned       canvas_width;
         unsigned       canvas_height;
 
-        Texture_Handle texture;
-        float          x, y, xBounce, yBounce, yDirection, xDirection, sampleWidth, sampleHeight;
+        /////////////////////////////////////////////////////////
 
+        ///////////////// Basic scene control setup ///////////////////
+
+        std::list<std::shared_ptr<Sprite>> sceneSpritesList;
+
+        /////////////////////////////////////////////////////////
 
     public:
 

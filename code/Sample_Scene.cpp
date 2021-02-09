@@ -1,11 +1,8 @@
 /*
- * SAMPLE SCENE
- * Copyright © 2018+ Ángel Rodríguez Ballesteros
+ * GAME SCENE
+ * Copyright © 2021+ Aitor Izurrategui de Castro
  *
- * Distributed under the Boost Software License, version  1.0
- * See documents/LICENSE.TXT or www.boost.org/LICENSE_1_0.txt
- *
- * angel.rodriguez@esne.edu
+ * aitorizur@hotmail.com
  */
 
 #include "Sample_Scene.hpp"
@@ -21,27 +18,19 @@ using namespace std;
 
 
 
-namespace example
+namespace basics
 {
 
     Sample_Scene::Sample_Scene()
     {
-        canvas_width  = 1280;
-        canvas_height =  720;
+        canvas_width  = 1920;
+        canvas_height =  1080;
     }
 
     bool Sample_Scene::initialize ()
     {
         state     = LOADING;
         suspended = false;
-        x         = 640;
-        y         = 360;
-        xBounce = 640;
-        yBounce = 360;
-        yDirection = 1;
-        xDirection = 1;
-        sampleWidth = 100;
-        sampleHeight = 100;
 
         return true;
     }
@@ -63,11 +52,21 @@ namespace example
             switch (event.id)
             {
                 case ID(touch-started):
+                {
+
+                    break;
+                }
                 case ID(touch-moved):
+                {
+
+                    break;
+                }
                 case ID(touch-ended):
                 {
+                    /*
                     x = *event[ID(x)].as< var::Float > ();
                     y = *event[ID(y)].as< var::Float > ();
+                     */
                     break;
                 }
             }
@@ -99,11 +98,6 @@ namespace example
                 canvas->clear        ();
                 canvas->set_color    (1, 1, 1);
 
-                if (texture)
-                {
-                    canvas->fill_rectangle ({ x, y }, { sampleWidth, sampleHeight }, texture.get ());
-                    canvas->fill_rectangle ({ xBounce, yBounce }, { sampleWidth, sampleHeight }, texture.get ());
-                }
             }
         }
     }
@@ -116,7 +110,6 @@ namespace example
 
             if (context)
             {
-                texture = Texture_2D::create (ID(test), context, "test.png");
 
                 if (texture)
                 {
@@ -130,37 +123,7 @@ namespace example
 
     void Sample_Scene::run (float time)
     {
-        if  (yBounce > 670)
-        {
-          yDirection = -1;
-        }
-        else if (yBounce < 50)
-        {
-            yDirection = 1;
-        }
 
-        if  (xBounce > 1230)
-        {
-            xDirection = -1;
-        }
-        else if (xBounce < 50)
-        {
-            xDirection = 1;
-        }
-
-        yBounce+= 100 * time * yDirection;
-        xBounce+= 100 * time * xDirection;
-
-        if  (CalculateDistance({xBounce, yBounce}, {x, y}) < 100)
-        {
-            sampleHeight = 200;
-            sampleWidth = 200;
-        }
-        else
-        {
-            sampleHeight = 100;
-            sampleWidth = 100;
-        }
     }
 
     float Sample_Scene::CalculateDistance(basics::Point2f firstPoint, basics::Point2f secondPoint)
