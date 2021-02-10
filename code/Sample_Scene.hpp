@@ -28,7 +28,19 @@ namespace basics
             RUNNING,
         };
 
+        enum GameplayState
+        {
+            WAITINGSTART,
+            WAITINGRESTART,
+            PLAYING,
+            PAUSED,
+            PAUSEDMENU,
+            HELPMENU,
+        };
+
         State          state;
+        GameplayState  gamePlayState;
+
         bool           suspended;
 
         unsigned       canvas_width;
@@ -38,7 +50,7 @@ namespace basics
 
         /////////////////////////////////////////////////////////
 
-        ///////////////// Variables relacionadas con la carga de texturas y sprites ///////////////////
+        ///////////////// Variables relacionadas con la carga de texturas y playingSprites ///////////////////
 
         //Creamos un struct que contendra la ruta de las texturas junto con un ID
         static struct   Texture_Data { Id id; const char * path; } textures_data[];
@@ -48,17 +60,31 @@ namespace basics
 
         //Mapa en el que se guardan shared_ptr a las texturas cargadas
         map<Id, shared_ptr<Texture_2D>> textures;
-        //Lista en la que se guardan shared_ptr a los sprites creados
-        list<shared_ptr<Sprite>> sprites;
+        //Lista en la que se guardan shared_ptr a los playingSprites creados usados mientras se juega
+        list<shared_ptr<Sprite>> playingSprites;
+        //Lista en la que se guardan shared_ptr a los playingSprites creados usados en el menu de pausa
+        list<shared_ptr<Sprite>> pausedSprites;
+        //Lista en la que se guardan shared_ptr a los playingSprites creados usados en el menu de ayuda
+        list<shared_ptr<Sprite>> helpSprites;
+
+        list<shared_ptr<Sprite>> remainingBlockSprites;
 
         /////////////////////////////////////////////////////////
 
-        ///////////////// Basic scene control setup ///////////////////
+        ///////////////// Variables relacionadas con el gameplay ///////////////////
 
-        float playerSpeed = 500;
+        float playerSpeed = 800;
         Vector2f playerDirection = {0, 0};
 
-        Sprite * playerReference;
+        float initialBallSpeed = 500;
+
+        int brokenBlockCounter = 0;
+
+        float  restartTimer = 1;
+
+        Sprite *playerReference, *ballReference, *topWallReference, *rightWallReference, *leftWallReference
+        , *leftButtonReference, *rightButtonReference, *youLostReference, *youWinReference, *optionsReference
+        , *loadingReference, *backReference, *menuButtonReference, *restartButtonReference, *helpButtonReference;
 
         /////////////////////////////////////////////////////////
 
@@ -85,9 +111,19 @@ namespace basics
         void CreateSprites ();
         void run  (float time);
 
+        void LimitPlayerPosition();
+        void StartBall();
+        void CheckBallLimits();
+        void CheckBallCollisions();
         void MovePlayer(float time);
+        void CreateLoadingSprite();
+        void CheckOptionsClick(Event & event);
+        void CheckPlayerMoveInput(Event & event);
+        bool CheckButtonClick(Event & event, Sprite * sprite);
         void RenderLoading(Canvas & canvas);
         void RenderPlay(Canvas & canvas);
+        void RenderPausedMenu(Canvas & canvas);
+        void RenderHelpMenu(Canvas & canvas);
 
     };
 

@@ -45,7 +45,7 @@ namespace basics
         float other_right  = other_left   + other.size.width;
         float other_top    = other_bottom + other.size.height;
 
-        // Se determina si los rectángulos envolventes de ambos sprites se solapan:
+        // Se determina si los rectángulos envolventes de ambos playingSprites se solapan:
 
         return !(other_left >= this_right || other_right <= this_left || other_bottom >= this_top || other_top <= this_bottom);
     }
