@@ -32,7 +32,7 @@ int main ()
 
     // Se crea una escena y se inicia mediante el Director:
 
-    director.run_scene (shared_ptr< Scene >(new Menu_Scene));
+    director.run_scene (shared_ptr< Scene >(new Sample_Scene));
 
     return 0;
 }

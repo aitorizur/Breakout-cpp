@@ -25,6 +25,9 @@ namespace basics
             {
                     {ID(ball), "gameScene/ball.png"},
                     {ID(horizontalBar), "gameScene/horizontal-bar.png"},
+                    {ID(verticalBar), "gameScene/vertical-bar.png"},
+                    {ID(player), "gameScene/player.png"},
+                    {ID(block), "gameScene/block.png"},
             };
 
     //Calculamos el numero items del array dividiendo el tamano total del array entre el tamano de un elemento
@@ -39,6 +42,7 @@ namespace basics
 
     bool Sample_Scene::initialize ()
     {
+
         state     = LOADING;
         suspended = false;
 
@@ -63,6 +67,14 @@ namespace basics
             {
                 case ID(touch-started):
                 {
+                    if (*event[ID(x)].as<var::Float>() > canvas_width/2)
+                    {
+                        playerDirection = {1,0};
+                    }
+                    else
+                    {
+                        playerDirection = {-1,0};
+                    }
 
                     break;
                 }
@@ -73,10 +85,7 @@ namespace basics
                 }
                 case ID(touch-ended):
                 {
-                    /*
-                    x = *event[ID(x)].as< var::Float > ();
-                    y = *event[ID(y)].as< var::Float > ();
-                     */
+                    playerDirection = {0,0};
                     break;
                 }
             }
@@ -85,11 +94,21 @@ namespace basics
 
     void Sample_Scene::update (float time)
     {
-        switch (state)
+        if (!suspended)
         {
-            case LOADING:
-                LoadTextures();     break;
-            case RUNNING: run  (time); break;
+            switch (state)
+            {
+                case LOADING:
+                {
+                    LoadTextures();
+                    break;
+                }
+                case RUNNING:
+                {
+                    run  (time);
+                    break;
+                }
+            }
         }
     }
 
@@ -154,27 +173,58 @@ namespace basics
         //Ordenamos los sprites en la lista para que a la hora de rendearse controlemos que sprites se rendean por encima de otros
 
         //PRIMERO CREAMOS LOS SPRITES DEL FONDO
-        shared_ptr<Sprite> bottomBar(new Sprite(textures[ID(horizontalBar)].get()));
         shared_ptr<Sprite> topBar(new Sprite(textures[ID(horizontalBar)].get()));
+        shared_ptr<Sprite> leftBar(new Sprite(textures[ID(verticalBar)].get()));
+        shared_ptr<Sprite> rightBar(new Sprite(textures[ID(verticalBar)].get()));
 
         topBar->set_anchor(TOP | LEFT);
-        topBar->set_position({0, canvas_height});
+        topBar->set_position({canvas_width/4, canvas_height});
 
-        bottomBar->set_anchor(BOTTOM | LEFT);
-        bottomBar->set_position({0, 0});
+        rightBar->set_anchor(TOP | LEFT);
+        rightBar->set_position({canvas_width/4 - rightBar->get_width(), canvas_height});
 
+        leftBar->set_anchor(TOP | LEFT);
+        leftBar->set_position({canvas_width/4 * 3 + 6, canvas_height});
+
+        sprites.push_back(leftBar);
+        sprites.push_back(rightBar);
         sprites.push_back(topBar);
 
         //DESPUES CREAMOS LOS RELACIONEADOS CON EL JUEGO
         shared_ptr<Sprite> ballSprite(new Sprite(textures[ID(ball)].get()));
+        shared_ptr<Sprite> player(new Sprite(textures[ID(player)].get()));
+
+        player->set_anchor(BOTTOM | LEFT);
+        player->set_position({ canvas_width/2 - player->get_width()/2, 0});
+
+        playerReference = player.get();
 
         sprites.push_back(ballSprite);
+        sprites.push_back(player);
 
+        //POR ULTIMO CREAMOS TODOS LOS BLOQUES
+        for (int f = 0; f < 8; ++f)
+        {
+            for (int i = 0; i < 14; ++i)
+            {
+                shared_ptr<Sprite> blockSprite(new Sprite(textures[ID(block)].get()));
+                blockSprite->set_anchor(BOTTOM | LEFT);
+                blockSprite->set_position({canvas_width/4 + i*blockSprite->get_width(), canvas_height/5 * 3 + f * blockSprite->get_height()});
+                sprites.push_back(blockSprite);
+            }
+        }
+    }
+
+    void Sample_Scene::MovePlayer(float time)
+    {
+        playerReference->set_speed(playerDirection * playerSpeed);
     }
 
     void Sample_Scene::run (float time)
     {
+        MovePlayer(time);
 
+        playerReference->update(time);
     }
 
     void Sample_Scene::RenderLoading(Canvas & canvas)

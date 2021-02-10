@@ -53,6 +53,15 @@ namespace basics
 
         /////////////////////////////////////////////////////////
 
+        ///////////////// Basic scene control setup ///////////////////
+
+        float playerSpeed = 500;
+        Vector2f playerDirection = {0, 0};
+
+        Sprite * playerReference;
+
+        /////////////////////////////////////////////////////////
+
     public:
 
         Sample_Scene();
@@ -75,6 +84,8 @@ namespace basics
         void LoadTextures ();
         void CreateSprites ();
         void run  (float time);
+
+        void MovePlayer(float time);
         void RenderLoading(Canvas & canvas);
         void RenderPlay(Canvas & canvas);
 
