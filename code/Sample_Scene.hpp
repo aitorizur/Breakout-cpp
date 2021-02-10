@@ -117,7 +117,6 @@ namespace basics
         void CheckBallCollisions();
         void MovePlayer(float time);
         void CreateLoadingSprite();
-        void CheckOptionsClick(Event & event);
         void CheckPlayerMoveInput(Event & event);
         bool CheckButtonClick(Event & event, Sprite * sprite);
         void RenderLoading(Canvas & canvas);

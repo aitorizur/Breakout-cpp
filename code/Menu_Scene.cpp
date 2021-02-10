@@ -1,152 +1,126 @@
 /*
- * SAMPLE SCENE
- * Copyright © 2018+ Ángel Rodríguez Ballesteros
+ * MENU SCENE
+ * Copyright © 2021+ Aitor Izurrategui de Castro
  *
- * Distributed under the Boost Software License, version  1.0
- * See documents/LICENSE.TXT or www.boost.org/LICENSE_1_0.txt
- *
- * angel.rodriguez@esne.edu
+ * aitorizur@hotmail.com
  */
-
+/*
 #include "Menu_Scene.hpp"
+#include "Sample_Scene.hpp"
 #include <basics/Canvas>
 #include <basics/Director>
-#include <basics/Log>
-#include <basics/Scaling>
-#include <basics/Rotation>
-#include <basics/Translation>
-#include <basics/internal/Raster_Font.hpp>
+#include <basics/Transformation>
 
 using namespace basics;
 using namespace std;
 
-
-
-namespace example
+namespace basics
 {
-    int  Speed;
-    basics::Vector2f velocityVector;
 
-    Menu_Scene::Menu_Scene()
-    {
-        canvas_width  = 1280;
-        canvas_height =  720;
-    }
+    // ---------------------------------------------------------------------------------------------
 
     bool Menu_Scene::initialize ()
     {
-        state     = LOADING;
-        suspended = false;
+        canvas_width  = 1920;
+        canvas_height =  1080;
+
+        //Se carga la textura y se crea e sprite
+        LoadTexture();
+        CreateSprite();
 
         return true;
     }
 
-    void Menu_Scene::suspend ()
-    {
-        suspended = true;
-    }
+    // ---------------------------------------------------------------------------------------------
 
-    void Menu_Scene::resume ()
+    void Menu_Scene::handle (basics::Event & event)
     {
-        suspended = false;
-    }
-
-    void Menu_Scene::handle (Event & event)
-    {
-        if (state == RUNNING)
+        switch (event.id)
         {
-            switch (event.id)
+            case ID(touch-started):         // El usuario toca la pantalla
             {
-                case ID(touch-started): {break;}
-                case ID(touch-moved): {break;}
-                case ID(touch-ended):
+                // Si el usuario toca el boton de play se inicia la escena de juego
+                if (CheckButtonClick(event, playButton.get()))
                 {
-                    //x = *event[ID(x)].as< var::Float > ();
-                    //y = *event[ID(y)].as< var::Float > ();
-                    break;
+                    director.run_scene (shared_ptr< Scene >(new Sample_Scene));
                 }
+
+                break;
             }
-        }
-    }
-
-    void Menu_Scene::update (float time)
-    {
-        switch (state)
-        {
-            case LOADING: load ();     break;
-            case RUNNING: run  (time); break;
-        }
-    }
-
-    void Menu_Scene::render (basics::Graphics_Context::Accessor & context)
-    {
-        if (!suspended && state == RUNNING)
-        {
-            Canvas * canvas = context->get_renderer< Canvas > (ID(canvas));
-
-            if (!canvas)
+            case ID(touch-moved):
             {
-                canvas = Canvas::create (ID(canvas), context, {{ canvas_width, canvas_height }});
+
+                break;
             }
 
-            if (canvas)
+            case ID(touch-ended):           // El usuario deja de tocar la pantalla
             {
-                canvas->clear        ();
-                canvas->set_color    (255, 255, 255);
 
-                testSprite->render(*canvas);
-                bottomBorder->render(*canvas);
-                topBorder->render(*canvas);
+                break;
             }
         }
+
     }
 
-    void Menu_Scene::load ()
+
+    // ---------------------------------------------------------------------------------------------
+
+    void Menu_Scene::render (Graphics_Context::Accessor & context)
     {
         if (!suspended)
         {
-            Graphics_Context::Accessor context = director.lock_graphics_context ();
+            // El canvas se puede haber creado previamente, en cuyo caso solo hay que pedirlo:
 
-            if (context)
+            Canvas * canvas = context->get_renderer< Canvas > (ID(canvas));
+
+            // Si no se ha creado previamente, hay que crearlo una vez:
+
+            if (!canvas)
             {
-                ballTexture = Texture_2D::create (ID(test), context, "ball.png");
-                horizontalLimitTexture = Texture_2D::create(ID(topBorderTest),context, "horizontal-bar.png");
+                 canvas = Canvas::create (ID(canvas), context, {{ canvas_width, canvas_height }});
+            }
 
-                if (ballTexture)
-                {
-                    context->add (ballTexture);
-                    context->add(horizontalLimitTexture);
-                    state = RUNNING;
-                }
+            // Si el canvas se ha podido obtener o crear, se puede dibujar con él:
 
-                testSprite = shared_ptr<Sprite>(new Sprite(ballTexture.get()));
-                bottomBorder = shared_ptr<Sprite>(new Sprite(horizontalLimitTexture.get()));
-                topBorder = shared_ptr<Sprite>(new Sprite(horizontalLimitTexture.get()));
-
-                bottomBorder->set_position({640,15});
-                topBorder->set_position({640,705});
-
-                testSprite->set_position({200,200});
-                testSprite->set_scale(1.f);
-                testSprite->set_speed({50, 400});
+            if (canvas)
+            {
+                canvas->clear ();
+                //Se rendea el boton de jugar
+                playButton->render(*canvas);
             }
         }
     }
 
-    void Menu_Scene::run (float time)
+    //Crea la textura del boton de jugar
+    void Menu_Scene::LoadTexture()
     {
-        testSprite->update(time);
+        Graphics_Context::Accessor context = director.lock_graphics_context ();
 
-        if (testSprite->intersects(*topBorder))
+        if (context)
         {
-            testSprite->set_position_y(topBorder->get_bottom_y() - testSprite->get_height()/2.f);
-            testSprite->set_speed_y(-testSprite->get_speed_y());
+            playButtonTexture = Texture_2D::create (ID(gorillaTextureLeft), context, "gorilla-arm-up-2.png");
+            context->add (playButtonTexture);
         }
-        else if (testSprite->intersects(*bottomBorder))
-        {
-            testSprite->set_position_y(bottomBorder->get_top_y() + testSprite->get_height()/2.f);
-            testSprite->set_speed_y(-testSprite->get_speed_y());
-        }
+    }
 
+    //Crea el sprite correspondiente a la textura del boton de jugar
+    void Menu_Scene::CreateSprite()
+    {
+        playButton = shared_ptr<Sprite>(new Sprite(playButtonTexture.get()));
+        playButton->set_anchor(BOTTOM | LEFT);
+        playButton->set_position({ canvas_width/2 - playButton->get_width() / 2, canvas_height/2 - playButton->get_height() / 2});
+    }
+
+    //Funcion que comprueba si un sprite esta siendo tocado
+    bool Menu_Scene::CheckButtonClick(Event &event, Sprite *sprite)
+    {
+        if (sprite->contains({*event[ID(x)].as<var::Float>(), *event[ID(y)].as<var::Float>()}))
+        {
+            return true;
+        } else
+        {
+            return false;
+        }
     }
 }
+*/

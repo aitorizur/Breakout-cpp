@@ -6,6 +6,7 @@
  */
 
 #include "Sample_Scene.hpp"
+#include "Intro_Scene.hpp"
 #include <basics/Canvas>
 #include <basics/Director>
 #include <basics/Log>
@@ -39,6 +40,7 @@ namespace basics
                     {ID(menuButton), "gameScene/menu-button.png"},
                     {ID(helpButton), "gameScene/help-button.png"},
                     {ID(restartButton), "gameScene/restart-button.png"},
+                    {ID(helpText), "gameScene/help-text.png"},
             };
 
     //Calculamos el numero items del array dividiendo el tamano total del array entre el tamano de un elemento
@@ -79,8 +81,11 @@ namespace basics
             {
                 case ID(touch-started):
                 {
+                    //Comprobamos si el juego ya ha terminado de cargar para comenzar a registrar los inputs
                     if (state == RUNNING)
                     {
+                        //Si el juego esta en espera para empezar, y se presiona los botones de movimiento,
+                        //ponemos el juego en funconamiento y le damos un impulso inicial a la pelota
                         if (gamePlayState == WAITINGSTART)
                         {
                             if (rightButtonReference->contains({*event[ID(x)].as<var::Float>(), *event[ID(y)].as<var::Float>()}) ||
@@ -129,7 +134,7 @@ namespace basics
                             }
                             else if (CheckButtonClick(event, menuButtonReference))
                             {
-
+                                director.run_scene (shared_ptr< Scene >(new Intro_Scene));
                             }
                             else if (CheckButtonClick(event, helpButtonReference))
                             {
@@ -154,6 +159,7 @@ namespace basics
                 }
                 case ID(touch-ended):
                 {
+                    //Solo registramos los inputs si el juego ha terminado de cargar
                     if (state == RUNNING)
                     {
                         if (gamePlayState == PLAYING)
@@ -365,7 +371,13 @@ namespace basics
 
         //CREAMOS SPRITES DEL MENU DE AYUDA
 
+        shared_ptr<Sprite> helpTextSprite(new Sprite(textures[ID(helpText)].get()));
+
+        helpTextSprite->set_anchor(BOTTOM | LEFT);
+        helpTextSprite->set_position({canvas_width / 2 - helpTextSprite->get_width() / 2, canvas_height / 2 - helpTextSprite->get_height() / 2});
+
         helpSprites.push_back(backSprite);
+        helpSprites.push_back(helpTextSprite);
 
         //CREAMOS REFERENCIAS A LOS SPRITES MAS USADOS
         playerReference = player.get();
@@ -518,6 +530,7 @@ namespace basics
         }
     }
 
+    //Funcion general utilizada para comprobar si se está pulsando un sprite
     bool Sample_Scene::CheckButtonClick(Event &event, Sprite *sprite)
     {
         if (sprite->contains({*event[ID(x)].as<var::Float>(), *event[ID(y)].as<var::Float>()}))
@@ -529,11 +542,13 @@ namespace basics
         }
     }
 
+    //Rendea el sprite de carga
     void Sample_Scene::RenderLoading(Canvas & canvas)
     {
         loadingReference->render(canvas);
     }
 
+    //Rendea todos los objetos relacionados al gameplay principal
     void Sample_Scene::RenderPlay(Canvas & canvas)
     {
         for (auto & sprite : playingSprites)
@@ -542,6 +557,7 @@ namespace basics
         }
     }
 
+    //Rendea todos los objetos del menu de juego
     void Sample_Scene::RenderPausedMenu(Canvas &canvas)
     {
         for (auto & sprite : pausedSprites)
@@ -550,6 +566,7 @@ namespace basics
         }
     }
 
+    //Rendea todos los objetos del menu de ayuda
     void Sample_Scene::RenderHelpMenu(Canvas &canvas)
     {
         for (auto & sprite : helpSprites)

@@ -1,42 +1,34 @@
 /*
  * MENU SCENE
- * Copyright © 2018+ Ángel Rodríguez Ballesteros
+ * Copyright © 2021+ Aitor Izurrategui de Castro
  *
- * Distributed under the Boost Software License, version  1.0
- * See documents/LICENSE.TXT or www.boost.org/LICENSE_1_0.txt
- *
- * angel.rodriguez@esne.edu
+ * aitorizur@hotmail.com
  */
-
+/*
 #include <memory>
 #include <basics/Scene>
 #include <basics/Texture_2D>
+#include <basics/Timer>
 #include "Sprite.hpp"
 
-namespace example
+using namespace std;
+
+namespace basics
 {
     class Menu_Scene : public basics::Scene
     {
-        typedef std::shared_ptr< basics::Texture_2D > Texture_Handle;
 
-    public:
+    private:
 
-        enum State
-        {
-            LOADING,
-            RUNNING,
-        };
-
-        State          state;
         bool           suspended;
 
         unsigned       canvas_width;
         unsigned       canvas_height;
 
-        Texture_Handle ballTexture, horizontalLimitTexture;
+        Timer timer;
 
-        std::shared_ptr<basics::Sprite> testSprite, topBorder, bottomBorder;
-
+        shared_ptr<Texture_2D> playButtonTexture;
+        shared_ptr<Sprite> playButton;
 
 
     public:
@@ -58,8 +50,11 @@ namespace example
 
     private:
 
-        void load ();
-        void run  (float time);
+        void LoadTexture ();
+        void CreateSprite ();
+        bool CheckButtonClick(Event &event, Sprite *sprite);
+
     };
 
 }
+*/
